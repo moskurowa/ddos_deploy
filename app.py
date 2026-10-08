@@ -8,7 +8,7 @@ model = joblib.load("ddos_pipeline")
 features = list(model.feature_names_in_)
 classes = list(model.classes_)
 THRESHOLD = 0.80
-MAX_ROWS = 300_000
+MAX_ROWS = 1_000_000
 
 st.set_page_config(page_title="DDoS (HTTP Flood) classifier", layout="wide")
 
