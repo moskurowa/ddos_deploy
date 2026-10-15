@@ -62,6 +62,7 @@ st.markdown(
     "แถวนั้นจะถูก label ว่า **ไม่มั่นใจ**)\n\n"
     "อัปโหลดไฟล์ CSV ที่มีคอลัมน์ดังนี้: "
     + ", ".join(f"`{c}`" for c in features)
+)
 
 
 up = st.file_uploader(f"ไฟล์ CSV (อ่านสูงสุด {MAX_ROWS:,} แถว)", type="csv")
