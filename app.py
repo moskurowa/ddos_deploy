@@ -6,13 +6,13 @@ import streamlit as st
 
 model = joblib.load("ddos_pipeline")
 features = list(model.feature_names_in_)
-classes = [LABEL_MAP.get(c, str(c)) for c in model.classes_]
 THRESHOLD = 0.80
 MAX_ROWS = 1_000_000
 LABEL_MAP = {
     0: "BENIGN", 1: "DDoS", "0": "BENIGN", "1": "DDoS",
     "BENIGN": "BENIGN", "DDoS": "DDoS",
 }
+classes = [LABEL_MAP.get(c, str(c)) for c in model.classes_]
 st.set_page_config(page_title="DDoS (HTTP Flood) classifier", layout="wide")
 
 
