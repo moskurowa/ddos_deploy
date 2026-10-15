@@ -8,11 +8,7 @@ model = joblib.load("ddos_pipeline")
 features = list(model.feature_names_in_)
 THRESHOLD = 0.80
 MAX_ROWS = 1_000_000
-LABEL_MAP = {
-    0: "BENIGN", 1: "DDoS", "0": "BENIGN", "1": "DDoS",
-    "BENIGN": "BENIGN", "DDoS": "DDoS",
-}
-classes = [LABEL_MAP.get(c, str(c)) for c in model.classes_]
+
 st.set_page_config(page_title="DDoS (HTTP Flood) classifier", layout="wide")
 
 
@@ -28,6 +24,16 @@ def prep(data: pd.DataFrame, features: list) -> pd.DataFrame:
 @st.cache_data(show_spinner=False)
 def run_prediction(file_bytes: bytes):
     import io
+
+    def to_name(c):
+        s = str(c).strip().lower()
+        if s in ("1", "1.0", "true", "ddos"):
+            return "DDoS"
+        if s in ("0", "0.0", "false", "benign"):
+            return "Benign"
+        return str(c)
+
+    classes = [to_name(c) for c in model.classes_]
 
     data = pd.read_csv(io.BytesIO(file_bytes), nrows=MAX_ROWS)
     X = prep(data, features)
@@ -51,7 +57,7 @@ def run_prediction(file_bytes: bytes):
             "สถานะ": status,
         }
     )
-    order = {"ไม่มั่นใจ": 0, "DDoS": 1, "BENIGN": 2}
+    order = {"ไม่มั่นใจ": 0, "DDoS": 1, "Benign": 2}
     detail["_ord"] = detail["สถานะ"].map(order)
     detail = detail.sort_values(["_ord", "ความมั่นใจ"]).drop(columns="_ord")
     return summary, detail, len(data)
