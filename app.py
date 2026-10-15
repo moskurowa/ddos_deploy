@@ -6,10 +6,13 @@ import streamlit as st
 
 model = joblib.load("ddos_pipeline")
 features = list(model.feature_names_in_)
-classes = list(model.classes_)
+classes = [LABEL_MAP.get(c, str(c)) for c in model.classes_]
 THRESHOLD = 0.80
 MAX_ROWS = 1_000_000
-
+LABEL_MAP = {
+    0: "BENIGN", 1: "DDoS", "0": "BENIGN", "1": "DDoS",
+    "BENIGN": "BENIGN", "DDoS": "DDoS",
+}
 st.set_page_config(page_title="DDoS (HTTP Flood) classifier", layout="wide")
 
 
@@ -57,8 +60,8 @@ st.title("DDoS (HTTP Flood) classifier")
 st.markdown(
     f"ตรวจได้เฉพาะ HTTP flood (ถ้าโมเดลทายแล้วมั่นใจต่ำกว่า {THRESHOLD:.0%} "
     "แถวนั้นจะถูก label ว่า **ไม่มั่นใจ**)\n\n"
-    "อัปโหลดไฟล์ CSV จาก CICFlowMeter"
-)
+    "อัปโหลดไฟล์ CSV ที่มีคอลัมน์ดังนี้: "
+    + ", ".join(f"`{c}`" for c in features)
 
 
 up = st.file_uploader(f"ไฟล์ CSV (อ่านสูงสุด {MAX_ROWS:,} แถว)", type="csv")
